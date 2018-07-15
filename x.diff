@@ -1,0 +1,379 @@
+commit ee53c52e0faf1f9bc6c8dac9f0b0aed44049aaac
+Author: rugang <rchen@aelladata.com>
+Date:   Sun Jul 15 09:04:05 2018 -0700
+
+    new changes
+
+diff --git a/os/base_linux/screenrc b/os/base_linux/screenrc
+index 16009a9..cc83512 100644
+--- a/os/base_linux/screenrc
++++ b/os/base_linux/screenrc
+@@ -1,3 +1,5 @@
+ vbell off
+ #termcapinfo linux 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
+-caption always "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
++defscrollback 1024000
++caption always "%{= kw}%-w%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+w"
++#caption always "%{R} Rugang"
+diff --git a/os/base_linux/screenrc.mgmt b/os/base_linux/screenrc.mgmt
+new file mode 100644
+index 0000000..f3e7452
+--- /dev/null
++++ b/os/base_linux/screenrc.mgmt
+@@ -0,0 +1,111 @@
++vbell off
++# None of my own work. Munged from various other .screenrc recipes
++#
++# Don't use CTRL-A as the trigger because its stops the bash 
++# cli navigation like CTRL-A for start of line to stop working
++escape ^Hh
++
++# We'd like to scroll in an xterm please
++defscrollback 1024000
++
++# http://superuser.com/questions/126606/how-to-get-mac-os-x-terminal-app-and-screen-vim-scrolling-to-play-nice/316900#316900
++#termcapinfo xterm-256color|xterm-color|xterm|xterms|xs|rxvt ti@:te@
++
++# Allow bold colors - necessary for some reason
++#attrcolor b ".I"
++
++# Change the hardstatus settings to give an window list at the bottom of the
++# screen with the current window highlighted
++#hardstatus alwayslastline 
++#hardstatus string '%{= kG}%{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}'
++#termcapinfo linux 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
++#caption always "%{= km}%-w%{= kR}%{+b}%t%{-b}%{= km}%+w %=%d %M %1c %{g}%H%{-}"
++
++#caption always "%{= kw}%-w%{= kR}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
++#caption always "%{= km}%-w%{= kR}%{+b}%t%{-b}%{= km}%+w %=%d %M %1c %{g}%H%{-}"
++#caption always "%{= km}%-w%{= kR}%{+b}%t%{-b}%{= kc}%+w %=%d %M %1c %{g}%H%{-}"
++#caption always "%{= kk}%-w%{= kR}%{+b}%t%{-b}%{= kk}%+w %=%d %M %1c %{g}%H%{-}"
++#caption always "%{= kw}%-w%{= kR}%{+b}%t%{-w}%{= kw}%+w %= %1c %{g}%{-}"
++#caption always "%{= kw}%-w%{= kR}%{+b}[%n %t]%{-b}%{= kw}%+w %=%d %M %0c %{g}%H%{-}"
++#caption always "%{= kw}%-w%{= kR}%{+b}[%n %t]%{-b}%{= kw}%+w %= %{y}%h@%{R}%H%{-}"
++# the following two lines give a two-line status, with the current window
++# highlighted
++hardstatus alwayslastline
++#hardstatus string '%{= kG}[%{G}%H%? %1`%?%{g}][%= %{= kw}%-w%{+b yk}%n*%t%?(%u)%? %{-}%+w %=%{g}][%{B}%m/%d %{W}%C%A%{g}]'
++hardstatus string '%{= kG}[%{G}%H%? %1`%?%{g}][%= %{= kw}%-w%{+b Rk}%n*%t%?(%u)%? %{-}%+w %=%{g}][%{B}%m/%d %{W}%C%A%{g}]'
++
++# no welcome message
++startup_message off
++
++# 256 colors
++attrcolor b ".I"
++termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
++defbce on
++
++# mouse tracking allows to switch region focus by clicking
++mousetrack on
++
++# default windows
++#select 0
++#bind c screen 0 # window numbering starts at 1 not 0
++#bind 0 select 10
++
++# get rid of silly xoff stuff
++bind s split
++
++# layouts
++layout autosave on
++layout new one
++select 1
++layout new two
++select 1
++split
++resize -v +8
++focus down
++select 4
++focus up
++layout new three
++select 1
++split
++resize -v +7
++focus down
++select 3
++split -v
++resize -h +10
++focus right
++select 4
++focus up
++
++layout attach one
++layout select one
++
++# navigating regions with Ctrl-arrows
++bindkey "^[[1;5D" focus left
++bindkey "^[[1;5C" focus right
++bindkey "^[[1;5A" focus up
++bindkey "^[[1;5B" focus down
++
++# switch windows with F3 (prev) and F4 (next)
++bindkey "^[OR" prev
++bindkey "^[OS" next
++
++# switch layouts with Ctrl+F3 (prev layout) and Ctrl+F4 (next)
++bindkey "^[O1;5R" layout prev
++bindkey "^[O1;5S" layout next
++
++# F2 puts Screen into resize mode. Resize regions using hjkl keys.
++bindkey "^[OQ" eval "command -c rsz" # enter resize mode
++
++# use hjkl keys to resize regions
++bind -c rsz h eval "resize -h -5" "command -c rsz"
++bind -c rsz j eval "resize -v -5" "command -c rsz"
++bind -c rsz k eval "resize -v +5" "command -c rsz"
++bind -c rsz l eval "resize -h +5" "command -c rsz"
++
++# quickly switch between regions using tab and arrows
++bind -c rsz \t    eval "focus"       "command -c rsz" # Tab
++bind -c rsz -k kl eval "focus left"  "command -c rsz" # Left
++bind -c rsz -k kr eval "focus right" "command -c rsz" # Right
++bind -c rsz -k ku eval "focus up"    "command -c rsz" # Up
++bind -c rsz -k kd eval "focus down"  "command -c rsz" # Down
++
+diff --git a/os/base_linux/vimrc b/os/base_linux/vimrc
+index c78c4a0..33c9b43 100644
+--- a/os/base_linux/vimrc
++++ b/os/base_linux/vimrc
+@@ -28,12 +28,12 @@ if has("cscope") && filereadable("/usr/bin/cscope")
+    set cst
+    set nocsverb
+    " add any database in current directory
+-   if filereadable("cscope.out")
+-      cs add cscope.out
++  " if filereadable("cscope.out")
++  "    cs add cscope.out
+    " else add database pointed to by environment
+-   elseif $CSCOPE_DB != ""
+-      cs add $CSCOPE_DB
+-   endif
++  " elseif $CSCOPE_DB != ""
++  "    cs add $CSCOPE_DB
++  " endif
+    set csverb
+ endif
+ 
+@@ -50,13 +50,22 @@ if &term=="xterm"
+ 	set t_Sf=^[[3%dm
+ endif
+ func Search_Word()
+-	let w = expand("<cword>")             
++	let w = expand("<cword>")
+ 	exe "grep -R " w "*"
+ 	exe 'copen'
+ 	endfun
+ 
+-" set softtabstop=4
+-set tabstop=4
++set tabstop=4       " The width of a TAB is set to 4.
++                    " Still it is a \t. It is just that
++                    " Vim will interpret it to be having
++                    " a width of 4.
++
++set shiftwidth=4    " Indents will have a width of 4
++
++set softtabstop=4   " Sets the number of columns for a TAB
++
++set expandtab       " Expand TABs to spaces
++
+ set cst
+ set csto=0
+ set cindent shiftwidth=4
+@@ -64,6 +73,7 @@ map <F3> :set number <CR>
+ imap <F3> <Esc> :set number <CR>
+ map <F5> :call Search_Word()<CR>
+ set incsearch
++set number
+ """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+ " cscope setting
+ """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+@@ -79,12 +89,179 @@ if has("cscope")
+ 	set csverb
+ endif
+ 
+-nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+-nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+-nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+-nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+-nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+-nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+-nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+-nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+-set textwidth=80
++"nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
++"nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
++"nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
++"nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
++"nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
++"nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
++"nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
++"nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
++set textwidth=160
++highlight! link DiffText MatchParen
++
++""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
++" CSCOPE settings for vim
++""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
++"
++" This file contains some boilerplate settings for vim's cscope interface,
++" plus some keyboard mappings that I've found useful.
++"
++" USAGE:
++" -- vim 6:     Stick this file in your ~/.vim/plugin directory (or in a
++"               'plugin' directory in some other directory that is in your
++"               'runtimepath'.
++"
++" -- vim 5:     Stick this file somewhere and 'source cscope.vim' it from
++"               your ~/.vimrc file (or cut and paste it into your .vimrc).
++"
++" NOTE:
++" These key maps use multiple keystrokes (2 or 3 keys).  If you find that vim
++" keeps timing you out before you can complete them, try changing your timeout
++" settings, as explained below.
++"
++" Happy cscoping,
++"
++" Jason Duell       jduell@alumni.princeton.edu     2002/3/7
++""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
++
++
++" This tests to see if vim was configured with the '--enable-cscope' option
++" when it was compiled.  If it wasn't, time to recompile vim...
++if has("cscope")
++
++    """"""""""""" Standard cscope/vim boilerplate
++
++    " use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
++    set cscopetag
++
++    " check cscope for definition of a symbol before checking ctags: set to 1
++    " if you want the reverse search order.
++    set csto=0
++
++    " add any cscope database in current directory
++    if filereadable("cscope.out")
++        "cs add cscope.out 
++    " else add the database pointed to by environment variable
++    elseif $CSCOPE_DB != ""
++        cs add $CSCOPE_DB
++    endif
++
++    " show msg when any other cscope db added
++    set nocscopeverbose 
++
++
++    """"""""""""" My cscope/vim key mappings
++    "
++    " The following maps all invoke one of the following cscope search types:
++    "
++    "   's'   symbol: find all references to the token under cursor
++    "   'g'   global: find global definition(s) of the token under cursor
++    "   'c'   calls:  find all calls to the function name under cursor
++    "   't'   text:   find all instances of the text under cursor
++    "   'e'   egrep:  egrep search for the word under cursor
++    "   'f'   file:   open the filename under cursor
++    "   'i'   includes: find files that include the filename under cursor
++    "   'd'   called: find functions that function under cursor calls
++    "
++    " Below are three sets of the maps: one set that just jumps to your
++    " search result, one that splits the existing vim window horizontally and
++    " diplays your search result in the new window, and one that does the same
++    " thing, but does a vertical split instead (vim 6 only).
++    "
++    " I've used CTRL-\ and CTRL-@ as the starting keys for these maps, as it's
++    " unlikely that you need their default mappings (CTRL-\'s default use is
++    " as part of CTRL-\ CTRL-N typemap, which basically just does the same
++    " thing as hitting 'escape': CTRL-@ doesn't seem to have any default use).
++    " If you don't like using 'CTRL-@' or CTRL-\, , you can change some or all
++    " of these maps to use other keys.  One likely candidate is 'CTRL-_'
++    " (which also maps to CTRL-/, which is easier to type).  By default it is
++    " used to switch between Hebrew and English keyboard mode.
++    "
++    " All of the maps involving the <cfile> macro use '^<cfile>$': this is so
++    " that searches over '#include <time.h>" return only references to
++    " 'time.h', and not 'sys/time.h', etc. (by default cscope will return all
++    " files that contain 'time.h' as part of their name).
++
++
++    " To do the first type of search, hit 'CTRL-\', followed by one of the
++    " cscope search types above (s,g,c,t,e,f,i,d).  The result of your cscope
++    " search will be displayed in the current window.  You can use CTRL-T to
++    " go back to where you were before the search. 
++    "
++
++    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>	
++    nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
++    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>	
++
++
++    " Using 'CTRL-spacebar' (intepreted as CTRL-@ by vim) then a search type
++    " makes the vim window split horizontally, with search result displayed in
++    " the new window.
++    "
++    " (Note: earlier versions of vim may not have the :scs command, but it
++    " can be simulated roughly via:
++    "    nmap <C-@>s <C-W><C-S> :cs find s <C-R>=expand("<cword>")<CR><CR>	
++
++    nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>	
++    nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>	
++    nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	
++    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>	
++
++
++    " Hitting CTRL-space *twice* before the search type does a vertical
++    " split instead of a horizontal one (vim 6 and up only)
++    "
++    " (Note: you may wish to put a 'set splitright' in your .vimrc
++    " if you prefer the new window on the right instead of the left
++
++    nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
++    nmap <C-@><C-@>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
++    nmap <C-@><C-@>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
++    nmap <C-@><C-@>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
++    nmap <C-@><C-@>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
++    nmap <C-@><C-@>f :vert scs find f <C-R>=expand("<cfile>")<CR><CR>	
++    nmap <C-@><C-@>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>	
++    nmap <C-@><C-@>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
++
++
++    """"""""""""" key map timeouts
++    "
++    " By default Vim will only wait 1 second for each keystroke in a mapping.
++    " You may find that too short with the above typemaps.  If so, you should
++    " either turn off mapping timeouts via 'notimeout'.
++    "
++    "set notimeout
++    "
++    " Or, you can keep timeouts, by uncommenting the timeoutlen line below,
++    " with your own personal favorite value (in milliseconds):
++    "
++    "set timeoutlen=4000
++    "
++    " Either way, since mapping timeout settings by default also set the
++    " timeouts for multicharacter 'keys codes' (like <F1>), you should also
++    " set ttimeout and ttimeoutlen: otherwise, you will experience strange
++    " delays as vim waits for a keystroke after you hit ESC (it will be
++    " waiting to see if the ESC is actually part of a key code like <F1>).
++    "
++    "set ttimeout
++    "
++    " personally, I find a tenth of a second to work well for key code
++    " timeouts. If you experience problems and have a slow terminal or network
++    " connection, set it higher.  If you don't set ttimeoutlen, the value for
++    " timeoutlent (default: 1000 = 1 second, which is sluggish) is used.
++    "
++    "set ttimeoutlen=100
++
++endif
++
++
