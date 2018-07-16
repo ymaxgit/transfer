@@ -1,0 +1,214 @@
+#!/bin/bash
+
+declare -a window_title
+window_title[0]="src"
+window_title[1]="ssh"
+window_title[2]="container"
+max_win="3"
+
+function list()
+{
+	screen -ls|grep '.*(.*).*tached)' >${HOME}/.list
+	total=`screen -ls|grep '.*(.*).*tached)'| wc -l`
+
+	j="$total"
+
+	i="1"
+	total=`expr $total + 1`
+
+	while [ "$i" -lt "$total" ]
+	do
+		session=`sed -n "${i}p" ${HOME}/.list|sed 's/^[ ,\t]*//g'`
+		echo "$j:   $session"
+		j=`expr $j - 1`
+		i=`expr $i + 1`
+	done
+}
+
+function attach()
+{
+	all=`screen -ls|grep '.*(.*).*tached)'|cut -d"." -f1|sed 's/[ ,\t]*//g'`
+	total=`screen -ls|grep '.*(.*).*tached)'| wc -l`
+	if [ -z "$1" ];then
+		target="$total"
+	else
+		target="$1"
+		if [ "$total" -lt "$target" ];then
+			echo "can't attach to ${otarget}st session, only $total sessions"
+			return
+		fi
+	fi
+
+	otarget="$target"
+	target=`expr $total - $target + 1`
+	
+	i="1"
+	rm -rf /tmp/1
+	for num in $all
+	do
+		if [ "$i" == "$target" ];then
+			current=`sl |grep Attached |cut -d"." -f1|cut -d":" -f2|sed 's/[ ,\t]*//g'`
+			if [ -z "$current" ];then
+#			screen -X detach
+#			screen -d -r $num
+			screen -x $num
+			else
+#				screen -X detach
+#				screen -d -r $num
+				screen -x $num
+			fi
+			return
+		fi
+		i=`expr $i + 1`
+	done
+}
+
+function create()
+{
+	rename="no"
+	total=`screen -ls|grep '.*(.*).*tached)'| wc -l`
+	j=$total
+	
+	if [ "$rename" == "yes" ];then
+		for tt in `screen -ls|grep '.*(.*).*tached)'|sed 's/[ ,\t][ ,\t]*/ /g'|cut -d' ' -f2`;do
+			title=`echo $tt|grep -o '\..*'|sed 's/^\.//g'`
+			test_str=`echo "$title" |sed 's/^_[0-9][0-9]*//g'|sed 's/[ ,\t]*//g'`
+			if [ -z "$test_str" ];then
+				echo "screen -S $tt -X sessionname \"_$j\""
+				screen -S $tt -X sessionname "_$j"
+			fi
+		    j=`expr $j - 1`
+		done
+	fi
+
+	total=`expr $total + 1`
+	tit="_${total}"
+
+	if [ ! -z "$1" ];then
+		tit="${1}"
+	fi
+
+	screen -d -m -S $tit -t $tit
+	screen -S $tit -p 0 -X title "${window_title[0]}"
+
+	i="0"
+	while [ "$i" -le "$max_win" ];do
+		screen -S $tit -X screen
+		screen -S $tit -p $i -X title "${window_title[$i]}"
+		screen -S $tit -p $i -X C
+		i=`expr $i + 1`
+	done
+	screen -S $tit -X at "#" stuff "clear^M"
+}
+
+function createm()
+{
+	rename="no"
+	total=`screen -ls|grep '.*(.*).*tached)'| wc -l`
+	j=$total
+	
+	if [ "$rename" == "yes" ];then
+		for tt in `screen -ls|grep '.*(.*).*tached)'|sed 's/[ ,\t][ ,\t]*/ /g'|cut -d' ' -f2`;do
+			title=`echo $tt|grep -o '\..*'|sed 's/^\.//g'`
+			test_str=`echo "$title" |sed 's/^_[0-9][0-9]*//g'|sed 's/[ ,\t]*//g'`
+			if [ -z "$test_str" ];then
+				echo "screen -S $tt -X sessionname \"_$j\""
+				screen -S $tt -X sessionname "_$j"
+			fi
+		    j=`expr $j - 1`
+		done
+	fi
+
+	total=`expr $total + 1`
+	tit="_${total}"
+
+	if [ ! -z "$1" ];then
+		tit="${1}"
+	fi
+
+	screen -c ~/.screenrc.mgmt -d -m -S $tit -t $tit
+	#screen -S $tit -p 0 -X title "${window_title[0]}"
+	screen -S $tit -p 0 -X title "source"
+
+	screen -S $tit -X at "#" stuff "clear^M"
+}
+function clean()
+{
+	echo "clean"
+	all=`screen -ls |grep '_[0-9][0-9]*'|cut -d"." -f1|sed 's/[ ,\t]*//g'`
+	
+	for num in $all
+	do
+		kill -9 $num
+#screen -ls |grep "$num"
+	done
+
+	screen -wipe
+}
+
+function remove()
+{
+	if [ -z "$1" ];then
+		echo "must remove one session"
+		echo "or use 'clean' to remove all"
+		return
+	else
+		all=`screen -ls|grep '.*(.*).*tached)'|cut -d"." -f1|sed 's/[ ,\t]*//g'`
+		total=`screen -ls|grep '.*(.*).*tached)'| wc -l`
+		target="$1"
+		if [ "$total" -lt "$target" ];then
+			echo "can't remove to ${otarget}st session, only $total sessions"
+			return
+		fi
+	fi
+
+	otarget="$target"
+	target=`expr $total - $target + 1`
+	
+	i="1"
+	for num in $all
+	do
+		if [ "$i" == "$target" ];then
+			kill -9 $num >/dev/null 2>&1
+			screen -wipe >/dev/null 2>&1
+			return
+		fi
+		i=`expr $i + 1`
+	done
+
+}
+#	col1=`screen -ls |grep '_[0-9][0-9].'| cut -d"(" -f1|sed 's/[ ,\t]*//g'`
+#	sl |grep Detached |cut -d"(" -f2|sed 's/[ ,\t]*//g'
+if [ -z "$1" ];then
+	list
+	exit
+fi
+
+if [ "$1" == "list" ];then
+	list
+elif [ "$1" == "create" ];then
+	create $2
+elif [ "$1" == "createm" ];then
+	createm $2
+elif [ "$1" == "attach" ];then
+	attach $2
+elif [ "$1" == "clean" ];then
+	clean
+elif [ "$1" == "remove" ];then
+	remove $2
+else
+	list
+fi
+
+exit
+
+function dummy()
+{
+#set following in .bashrc
+	alias sc='~/bin/runscreen create'
+	alias sa='~/bin/runscreen attach'
+	alias sl='~/bin/runscreen ls'
+	alias scc='~/bin/runscreen clean'
+	alias sd='~/bin/runscreen remove'
+}
+#screen -S 16780._1 -p 1 -X title "debug"
